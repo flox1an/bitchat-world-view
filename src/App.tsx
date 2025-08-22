@@ -52,6 +52,7 @@ function ChatLine({ ev, showGeohash }: { ev: NostrEvent; showGeohash: boolean })
 export default function App() {
   const [selectedChatroom, setSelectedChatroom] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'chat' | 'map'>('chat');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Create a streaming timeline observable for kind 20000 events
   const events = useObservableMemo(
@@ -142,18 +143,40 @@ export default function App() {
   // Show chat view
   return (
     <div className="min-h-screen bg-black text-sm text-gray-100 font-mono flex relative">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 border-r border-gray-700 flex flex-col h-screen">
+      <div className={`
+        fixed lg:static inset-y-0 left-0 z-50
+        w-64 bg-gray-900 border-r border-gray-700 flex flex-col h-screen
+        transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
         <div className="p-4 border-b border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-lg font-bold text-green-300">Chatrooms</h2>
-            <button
-              onClick={() => setCurrentView('map')}
-              className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-xs transition-colors"
-              title="View Map"
-            >
-              🌍
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentView('map')}
+                className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-xs transition-colors"
+                title="View Map"
+              >
+                🌍
+              </button>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-xs transition-colors"
+                title="Close Sidebar"
+              >
+                ✕
+              </button>
+            </div>
           </div>
           <p className="text-gray-400 text-xs">Click to filter by location</p>
         </div>
@@ -196,10 +219,17 @@ export default function App() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col h-screen">
         <header className="sticky top-0 z-10 bg-black/90 border-b border-white/10 p-3 flex items-center gap-3 flex-shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-sm transition-colors"
+            title="Open Sidebar"
+          >
+            ☰
+          </button>
           <div className="font-bold text-green-300">
             {selectedChatroom ? `#${selectedChatroom}` : 'bitchat World View'}
           </div>
-          <div className="text-gray-400">Relays: {RELAYS.length}</div>
+          <div className="text-gray-400 hidden sm:block">Relays: {RELAYS.length}</div>
           <div className="ml-auto flex items-center gap-3">
             <button
               onClick={() => setCurrentView('map')}

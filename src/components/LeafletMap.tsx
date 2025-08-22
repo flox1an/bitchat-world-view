@@ -127,14 +127,14 @@ export default function LeafletMap({
   }, [mapPoints]);
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4">
+    <div className="bg-gray-900 rounded-lg p-2 sm:p-4">
       <h3 className="text-lg font-bold text-green-300 mb-4">
         Chatroom Locations
       </h3>
 
       <div
         className="bg-gray-800 rounded-lg overflow-hidden"
-        style={{ height: "500px", minHeight: "500px" }}
+        style={{ height: "400px", minHeight: "400px" }}
       >
         {mapPoints.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-400">
@@ -150,7 +150,7 @@ export default function LeafletMap({
           <MapContainer
             center={mapCenter}
             zoom={2}
-            style={{ height: "500px", width: "100%" }}
+            style={{ height: "400px", width: "100%" }}
             className="leaflet-container"
           >
             <TileLayer
