@@ -134,7 +134,7 @@ export default function LeafletMap({
 
       <div
         className="bg-gray-800 rounded-lg overflow-hidden"
-        style={{ height: "400px", minHeight: "400px" }}
+        style={{ height: "70dvh", minHeight: "400px" }}
       >
         {mapPoints.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-400">
@@ -150,7 +150,7 @@ export default function LeafletMap({
           <MapContainer
             center={mapCenter}
             zoom={2}
-            style={{ height: "400px", width: "100%" }}
+            style={{ height: "70dvh", width: "100%" }}
             className="leaflet-container"
           >
             <TileLayer
