@@ -33,6 +33,29 @@ function formatTime(unix: number) {
   }
 }
 
+// Function to render text with clickable links
+function renderTextWithLinks(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  
+  return parts.map((part, index) => {
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-300 underline break-all"
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 function ChatLine({ ev, showGeohash }: { ev: NostrEvent; showGeohash: boolean }) {
   const time = formatTime(ev.created_at);
   const nickname = getTagValue(ev, "n") || `${ev.pubkey?.slice(0, 8)}…`;
@@ -43,7 +66,7 @@ function ChatLine({ ev, showGeohash }: { ev: NostrEvent; showGeohash: boolean })
     <div className="whitespace-pre-wrap break-all mb-1">
       <span className="text-gray-400">[{time}]</span>{" "}
       <span className="text-cyan-300">&lt;{nickname}&gt;</span>{" "}
-      <span className="text-gray-100">{msg}</span>{" "}
+      <span className="text-gray-100">{renderTextWithLinks(msg)}</span>{" "}
       {showGeohash && geohash && <span className="text-fuchsia-300">#{geohash}</span>}
     </div>
   );
