@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.20",
     "applesauce-core": "^3.0.1",
     "applesauce-react": "^3.0.0",
     "applesauce-relay": "^3.0.0",
+    "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

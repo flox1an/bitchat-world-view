@@ -11,3 +11,69 @@ body {
   background-color: #000;
   color: #fff;
 }
+
+/* Leaflet map styles */
+.leaflet-container {
+  background: #1f2937 !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.leaflet-map-pane {
+  z-index: 1 !important;
+}
+
+.leaflet-tile-pane {
+  z-index: 2 !important;
+}
+
+.leaflet-overlay-pane {
+  z-index: 3 !important;
+}
+
+.leaflet-marker-pane {
+  z-index: 4 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 5 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #374151 !important;
+  color: #f3f4f6 !important;
+  border-radius: 8px !important;
+}
+
+.leaflet-popup-tip {
+  background: #374151 !important;
+}
+
+.leaflet-popup-close-button {
+  color: #9ca3af !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #f3f4f6 !important;
+}
+
+/* Custom chatroom icon styles */
+.custom-chatroom-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Fix sticky header issues */
+.sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+}
+
+/* Ensure header stays visible */
+header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  background: black !important;
+}

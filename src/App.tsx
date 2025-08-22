@@ -4,6 +4,7 @@ import { mapEventsToStore, mapEventsToTimeline } from "applesauce-core/observabl
 import { useObservableMemo } from "applesauce-react/hooks";
 import { map } from "rxjs";
 import { eventStore, pool, RELAYS, getTagValue } from "./lib/applesauce";
+import MapView from "./pages/MapView";
 
 // Simple type for Nostr events
 interface NostrEvent {
@@ -39,7 +40,7 @@ function ChatLine({ ev, showGeohash }: { ev: NostrEvent; showGeohash: boolean })
   const msg = ev.content ?? "";
 
   return (
-    <div className="whitespace-pre-wrap break-words mb-1">
+    <div className="whitespace-pre-wrap break-all mb-1">
       <span className="text-gray-400">[{time}]</span>{" "}
       <span className="text-cyan-300">&lt;{nickname}&gt;</span>{" "}
       <span className="text-gray-100">{msg}</span>{" "}
@@ -50,6 +51,7 @@ function ChatLine({ ev, showGeohash }: { ev: NostrEvent; showGeohash: boolean })
 
 export default function App() {
   const [selectedChatroom, setSelectedChatroom] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<'chat' | 'map'>('chat');
 
   // Create a streaming timeline observable for kind 20000 events
   const events = useObservableMemo(
@@ -120,13 +122,40 @@ export default function App() {
     }
   }, [count]);
 
+  // Show map view if currentView is 'map'
+  if (currentView === 'map') {
+    return (
+      <MapView
+        chatrooms={chatrooms}
+        onChatroomSelect={(geohash) => {
+          setSelectedChatroom(geohash);
+          setCurrentView('chat');
+        }}
+        onBackToChat={() => {
+          setSelectedChatroom(null); // Clear any chatroom filter when going back
+          setCurrentView('chat');
+        }}
+      />
+    );
+  }
+
+  // Show chat view
   return (
-    <div className="min-h-screen bg-black text-sm text-gray-100 font-mono flex">
+    <div className="min-h-screen bg-black text-sm text-gray-100 font-mono flex relative">
       {/* Sidebar */}
       <div className="w-64 bg-gray-900 border-r border-gray-700 flex flex-col h-screen">
         <div className="p-4 border-b border-gray-700 flex-shrink-0">
-          <h2 className="text-lg font-bold text-green-300">Chatrooms</h2>
-          <p className="text-gray-400 text-xs mt-1">Click to filter by location</p>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-bold text-green-300">Chatrooms</h2>
+            <button
+              onClick={() => setCurrentView('map')}
+              className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-2 py-1 rounded text-xs transition-colors"
+              title="View Map"
+            >
+              🌍
+            </button>
+          </div>
+          <p className="text-gray-400 text-xs">Click to filter by location</p>
         </div>
         
         <div className="flex-1 overflow-y-auto min-h-0">
@@ -171,7 +200,15 @@ export default function App() {
             {selectedChatroom ? `#${selectedChatroom}` : 'bitchat World View'}
           </div>
           <div className="text-gray-400">Relays: {RELAYS.length}</div>
-          <div className="ml-auto text-gray-500">{count} msgs</div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={() => setCurrentView('map')}
+              className="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded text-sm transition-colors"
+            >
+              🌍 Map View
+            </button>
+            <div className="text-gray-500">{count} msgs</div>
+          </div>
         </header>
 
         <main 
