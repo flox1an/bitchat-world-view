@@ -18,10 +18,11 @@ A real-time Nostr chat application that streams kind 20000 (ephemeral) events fr
 ## Installation
 
 1. **Upgrade Node.js** (if needed):
+
    ```bash
    # Using Homebrew
    brew install node@20
-   
+
    # Or using nvm
    nvm install 20
    nvm use 20
@@ -35,6 +36,7 @@ A real-time Nostr chat application that streams kind 20000 (ephemeral) events fr
 ## Usage
 
 1. **Start the development server**:
+
    ```bash
    npm run dev
    ```
@@ -46,6 +48,7 @@ A real-time Nostr chat application that streams kind 20000 (ephemeral) events fr
 ## Configuration
 
 The app connects to these relays by default:
+
 - `wss://relay.damus.io`
 - `wss://nos.lol`
 - `wss://relay.primal.net`
@@ -57,6 +60,7 @@ You can modify the relay list in `src/lib/applesauce.ts`.
 ## Event Format
 
 Each event displays:
+
 - **Timestamp**: When the event was created
 - **Nickname**: From the `n` tag, or pubkey prefix if not available
 - **Message**: The event content
