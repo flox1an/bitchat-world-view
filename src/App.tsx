@@ -76,6 +76,7 @@ export default function App() {
   const [selectedChatroom, setSelectedChatroom] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'chat' | 'map'>('chat');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   // Create a streaming timeline observable for kind 20000 events
   const events = useObservableMemo(
@@ -127,6 +128,27 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const count = filteredEvents?.length ?? 0;
 
+  // Check if user is at bottom of chat
+  const checkIfAtBottom = () => {
+    const chatContainer = scrollRef.current;
+    if (!chatContainer) return true;
+
+    const threshold = 200; // pixels from bottom - increased for less sensitivity
+    const isNearBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < threshold;
+    setIsAtBottom(isNearBottom);
+  };
+
+  // Scroll to bottom function
+  const scrollToBottom = () => {
+    const chatContainer = scrollRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTo({ 
+        top: chatContainer.scrollHeight, 
+        behavior: "smooth" 
+      });
+    }
+  };
+
   // Auto-scroll to bottom when new messages arrive, but only if user is near bottom
   React.useEffect(() => {
     const chatContainer = scrollRef.current;
@@ -145,6 +167,25 @@ export default function App() {
       });
     }
   }, [count]);
+
+  // Add scroll event listener to track bottom position
+  React.useEffect(() => {
+    const chatContainer = scrollRef.current;
+    if (!chatContainer) return;
+
+    const handleScroll = () => {
+      checkIfAtBottom();
+    };
+
+    chatContainer.addEventListener('scroll', handleScroll);
+    
+    // Initial check
+    checkIfAtBottom();
+
+    return () => {
+      chatContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, [filteredEvents]);
 
   // Show map view if currentView is 'map'
   if (currentView === 'map') {
@@ -266,7 +307,7 @@ export default function App() {
 
         <main 
           ref={scrollRef} 
-          className="flex-1 p-4 pb-24 overflow-y-auto min-h-0"
+          className="flex-1 p-4 pb-24 overflow-y-auto min-h-0 relative"
         >
           {!filteredEvents || filteredEvents.length === 0 ? (
             <div className="text-gray-500">
@@ -280,6 +321,19 @@ export default function App() {
                 showGeohash={!selectedChatroom}
               />
             ))
+          )}
+
+          {/* Floating scroll to bottom button */}
+          {!isAtBottom && (
+            <button
+              onClick={scrollToBottom}
+              className="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 border-2 border-green-500"
+              title="Scroll to bottom"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
           )}
         </main>
       </div>
