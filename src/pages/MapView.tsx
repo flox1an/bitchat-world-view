@@ -1,4 +1,3 @@
-import React from 'react';
 import LeafletMap from '../components/LeafletMap';
 
 interface Chatroom {

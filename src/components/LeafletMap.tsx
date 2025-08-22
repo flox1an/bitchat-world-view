@@ -1,19 +1,22 @@
-import React, { useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { useMemo } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 // Simple geohash decoder
 function decodeGeohash(geohash: string): { lat: number; lng: number } | null {
-  const base32 = '0123456789bcdefghjkmnpqrstuvwxyz';
+  const base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
   let lat = 0;
   let lng = 0;
   let latErr = 90;
@@ -62,10 +65,10 @@ interface LeafletMapProps {
 
 // Custom icon for chatrooms
 function createChatroomIcon(messageCount: number) {
-  const size = Math.max(20, Math.min(40, 20 + (messageCount / 5)));
-  
+  const size = Math.max(20, Math.min(40, 20 + messageCount / 5));
+
   return L.divIcon({
-    className: 'custom-chatroom-icon',
+    className: "custom-chatroom-icon",
     html: `
       <div style="
         width: ${size}px;
@@ -90,14 +93,17 @@ function createChatroomIcon(messageCount: number) {
   });
 }
 
-export default function LeafletMap({ chatrooms, onChatroomClick }: LeafletMapProps) {
+export default function LeafletMap({
+  chatrooms,
+  onChatroomClick,
+}: LeafletMapProps) {
   // Decode geohashes to coordinates
   const mapPoints = useMemo(() => {
     return chatrooms
-      .map(room => {
+      .map((room) => {
         const coords = decodeGeohash(room.geohash);
         if (!coords) return null;
-        
+
         return {
           ...room,
           lat: coords.lat,
@@ -110,38 +116,48 @@ export default function LeafletMap({ chatrooms, onChatroomClick }: LeafletMapPro
   // Calculate map center based on points
   const mapCenter = useMemo(() => {
     if (mapPoints.length === 0) return [0, 0] as [number, number];
-    
+
     const totalLat = mapPoints.reduce((sum, point) => sum + point.lat, 0);
     const totalLng = mapPoints.reduce((sum, point) => sum + point.lng, 0);
-    
-    return [totalLat / mapPoints.length, totalLng / mapPoints.length] as [number, number];
+
+    return [totalLat / mapPoints.length, totalLng / mapPoints.length] as [
+      number,
+      number
+    ];
   }, [mapPoints]);
 
   return (
     <div className="bg-gray-900 rounded-lg p-4">
-      <h3 className="text-lg font-bold text-green-300 mb-4">Chatroom Locations</h3>
-      
-      <div className="bg-gray-800 rounded-lg overflow-hidden" style={{ height: '500px', minHeight: '500px' }}>
+      <h3 className="text-lg font-bold text-green-300 mb-4">
+        Chatroom Locations
+      </h3>
+
+      <div
+        className="bg-gray-800 rounded-lg overflow-hidden"
+        style={{ height: "500px", minHeight: "500px" }}
+      >
         {mapPoints.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-400">
             <div className="text-center">
               <div className="text-2xl mb-2">🌍</div>
               <div>No chatrooms found yet</div>
-              <div className="text-sm">Waiting for kind 20000 events with geohash tags...</div>
+              <div className="text-sm">
+                Waiting for kind 20000 events with geohash tags...
+              </div>
             </div>
           </div>
         ) : (
           <MapContainer
             center={mapCenter}
             zoom={2}
-            style={{ height: '500px', width: '100%' }}
+            style={{ height: "500px", width: "100%" }}
             className="leaflet-container"
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            
+
             {mapPoints.map((point) => (
               <Marker
                 key={point.geohash}
@@ -153,8 +169,12 @@ export default function LeafletMap({ chatrooms, onChatroomClick }: LeafletMapPro
               >
                 <Popup>
                   <div className="text-center">
-                    <div className="font-bold text-green-600">#{point.geohash}</div>
-                    <div className="text-sm text-gray-600">{point.messageCount} messages</div>
+                    <div className="font-bold text-green-600">
+                      #{point.geohash}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {point.messageCount} messages
+                    </div>
                     <button
                       onClick={() => onChatroomClick?.(point.geohash)}
                       className="mt-2 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
@@ -168,7 +188,7 @@ export default function LeafletMap({ chatrooms, onChatroomClick }: LeafletMapPro
           </MapContainer>
         )}
       </div>
-      
+
       <div className="mt-4 text-sm text-gray-400">
         <p>• Green circles represent chatrooms</p>
         <p>• Circle size indicates message activity</p>
